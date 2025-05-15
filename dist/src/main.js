@@ -51,12 +51,24 @@ const express_1 = __importStar(require("express"));
 const require_auth_1 = require("../common/src/middlewares/require-auth");
 const require_role_1 = require("../common/src/middlewares/require-role");
 const mongoose_1 = __importDefault(require("mongoose"));
-const signup_1 = require("./routers/userAuth/signup");
 const cookie_session_1 = __importDefault(require("cookie-session"));
-const signin_1 = require("./routers/userAuth/signin");
-const current_user_1 = require("./routers/userAuth/current-user");
+// routers pentru useri ( sportiv )
+const userSignup_1 = require("./routers/user/userSignup");
+const userSignin_1 = require("./routers/user/userSignin");
+const userSignout_1 = require("./routers/user/userSignout");
+const current_user_1 = require("./routers/user/current-user");
 const current_user_2 = require("../common/src/middlewares/current-user");
-const signout_1 = require("./routers/userAuth/signout");
+// routers pentru administratori
+const administratorSignin_1 = require("./routers/administrator/administratorSignin");
+const administratorSignup_1 = require("./routers/administrator/administratorSignup");
+const administratorSignout_1 = require("./routers/administrator/administratorSignout");
+const administratorGetAll_1 = require("./routers/administrator/administratorGetAll");
+const administratorGetOne_1 = require("./routers/administrator/administratorGetOne");
+const administratorDelete_1 = require("./routers/administrator/administratorDelete");
+const userGetAll_1 = require("./routers/user/userGetAll");
+const userGetOne_1 = require("./routers/user/userGetOne");
+const addCourse_1 = require("./routers/administrator/addCourse");
+const deleteCourse_1 = require("./routers/administrator/deleteCourse");
 dotenv.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
@@ -71,13 +83,22 @@ app.use((0, cookie_session_1.default)({
     secure: false,
 }));
 app.use(current_user_2.currentUser);
-app.use(signup_1.signupRouter);
-app.use(signin_1.signinRouter);
-app.use(signout_1.signoutRouter);
+// rutele user / sportiv
+app.use(userSignup_1.userSignupRouter);
+app.use(userSignin_1.userSigninRouter);
+app.use(userSignout_1.userSignoutRouter);
 app.use(current_user_1.currentUserRouter);
-app.get("/", require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send("OK");
-}));
+// rutele administrator
+app.use(administratorSignin_1.administratorSigninRouter);
+app.use(administratorSignout_1.administratorSignouRouter);
+app.use(administratorSignup_1.administratorSignupRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), administratorGetAll_1.getAllAdministratorsRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), administratorGetOne_1.getOneAdministratorRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), administratorDelete_1.deleteAdministratorRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), userGetAll_1.getAllUsersRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), userGetOne_1.getOneUserRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), addCourse_1.addCourseRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), deleteCourse_1.deleteCourseRouter);
 app.use((err, req, res, next) => {
     res.status(err.status).json(err.message);
 });

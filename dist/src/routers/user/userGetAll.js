@@ -9,13 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAuth = void 0;
-const requireAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.currentUser) {
-        const error = new Error("Not logged in");
-        error.status = 401;
-        next(error);
-    }
-    next();
-});
-exports.requireAuth = requireAuth;
+exports.getAllUsersRouter = void 0;
+const express_1 = require("express");
+const user_models_1 = require("../../models/user.models");
+const router = (0, express_1.Router)();
+exports.getAllUsersRouter = router;
+router.get("/api/user/getall", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const users = yield user_models_1.User.find({});
+    res.status(200).send(users);
+}));

@@ -51,6 +51,20 @@ const trainerSchema = new mongoose.Schema({
   },
 });
 
+trainerSchema.pre("save", async function (done) {
+  if (this.isModified("password") || this.isNew) {
+    const hashedPwd = await authenticationService.pwdToHash(
+      this.get("password")
+    );
+    this.set("password", hashedPwd);
+  }
+  done();
+});
+
+trainerSchema.statics.build = (dto: CreateTrainerDto) => {
+  return new Trainer(dto);
+};
+
 export const Trainer = mongoose.model<TrainerDoc, TrainerModel>(
   "Trainer",
   trainerSchema

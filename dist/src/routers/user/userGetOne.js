@@ -9,13 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAuth = void 0;
-const requireAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.currentUser) {
-        const error = new Error("Not logged in");
-        error.status = 401;
-        next(error);
+exports.getOneUserRouter = void 0;
+const express_1 = require("express");
+const user_models_1 = require("../../models/user.models");
+const router = (0, express_1.Router)();
+exports.getOneUserRouter = router;
+router.get("/api/user/getone/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    if (!id) {
+        let error = new Error("Id is mandatory in order to search for a user");
+        error.status = 400;
+        return next(error);
     }
-    next();
-});
-exports.requireAuth = requireAuth;
+    const user = yield user_models_1.User.findById(id);
+    if (!user) {
+        let error = new Error("User not found");
+        error.status = 404;
+        return next(error);
+    }
+    res.status(200).send(user);
+}));

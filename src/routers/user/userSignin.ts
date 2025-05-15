@@ -5,10 +5,15 @@ import jwt from "jsonwebtoken";
 const router = Router();
 
 router.post(
-  "/api/auth/signin",
+  "/api/user/auth/signin",
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      let error = new Error("Please fill in all the inputs") as CustomError;
+      error.status = 400;
+      return next(error);
+    }
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -25,7 +30,7 @@ router.post(
     }
 
     const token = jwt.sign(
-      { email, userId: user._id, role: "user" },
+      { email, id: user._id, role: "user" },
       process.env.JWT_KEY!
     );
     req.session = { jwt: token };
@@ -33,4 +38,4 @@ router.post(
   }
 );
 
-export { router as signinRouter };
+export { router as userSigninRouter };

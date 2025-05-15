@@ -4,16 +4,16 @@ const router = Router();
 import jwt from "jsonwebtoken";
 
 router.post(
-  "/api/auth/signup",
+  "/api/user/auth/signup",
   async (req: Request, res: Response, next: NextFunction) => {
     const { lastName, firstName, email, password } = req.body;
 
-    if (!lastName || !firstName || !email || !password)
-      return next(
-        new Error(
-          "Input is not valid! ( lastName, firstName , email, password are required!)"
-        )
-      );
+    if (!lastName || !firstName || !email || !password) {
+      let error = new Error("Please fill in all the inputs") as CustomError;
+      error.status = 400;
+      return next(error);
+    }
+
     const user = await User.findOne({ email });
     if (user) {
       let error = new Error("User already exists") as CustomError;
@@ -27,7 +27,7 @@ router.post(
 
     req.session = {
       jwt: jwt.sign(
-        { email, userId: newUser._id, role: "user" },
+        { email, id: newUser._id, role: "user" },
         process.env.JWT_KEY!
       ),
     };
@@ -36,4 +36,4 @@ router.post(
   }
 );
 
-export { router as signupRouter };
+export { router as userSignupRouter };

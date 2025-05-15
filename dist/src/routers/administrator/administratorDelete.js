@@ -9,13 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAuth = void 0;
-const requireAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.currentUser) {
-        const error = new Error("Not logged in");
-        error.status = 401;
-        next(error);
+exports.deleteAdministratorRouter = void 0;
+const express_1 = require("express");
+const administrator_models_1 = require("../../models/administrator.models");
+const router = (0, express_1.Router)();
+exports.deleteAdministratorRouter = router;
+router.delete("/api/administrator/delete/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const administrator = yield administrator_models_1.Administrator.findById(id);
+    if (!administrator) {
+        let error = new Error("Administrator not found");
+        error.status = 404;
+        return next(error);
     }
-    next();
-});
-exports.requireAuth = requireAuth;
+    yield administrator_models_1.Administrator.deleteOne({ _id: id });
+    res.status(200).send({ deleted: administrator });
+}));

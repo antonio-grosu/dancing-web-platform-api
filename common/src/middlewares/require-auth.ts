@@ -6,7 +6,7 @@ export const requireAuth = async (
   next: NextFunction
 ) => {
   if (!req.currentUser) {
-    const error = new Error("Not authorized") as CustomError;
+    const error = new Error("Not logged in") as CustomError;
     error.status = 401;
     next(error);
   }

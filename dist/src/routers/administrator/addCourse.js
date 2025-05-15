@@ -9,13 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAuth = void 0;
-const requireAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.currentUser) {
-        const error = new Error("Not logged in");
-        error.status = 401;
-        next(error);
+exports.addCourseRouter = void 0;
+const express_1 = require("express");
+const course_models_1 = require("../../models/course.models");
+const router = (0, express_1.Router)();
+exports.addCourseRouter = router;
+router.post("/api/administrator/addcourse", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name, dancingStyle } = req.body;
+    if (!name || !dancingStyle) {
+        let error = new Error("Name and dancing style are required in order to create a post/event");
+        error.status = 400;
+        return next(error);
     }
-    next();
-});
-exports.requireAuth = requireAuth;
+    const course = course_models_1.Course.build({ name, dancingStyle });
+    yield course.save();
+    res.status(201).send(course);
+}));

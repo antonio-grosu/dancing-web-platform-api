@@ -42,6 +42,10 @@ const courseSchema = new mongoose.Schema({
   },
 });
 
+courseSchema.statics.build = (dto: CreateCourseDto) => {
+  return new Course(dto);
+};
+
 export const Course = mongoose.model<CourseDoc, CourseModel>(
   "Course",
   courseSchema

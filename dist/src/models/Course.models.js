@@ -24,4 +24,7 @@ const courseSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.Types.ObjectId,
     },
 });
+courseSchema.statics.build = (dto) => {
+    return new exports.Course(dto);
+};
 exports.Course = mongoose_1.default.model("Course", courseSchema);

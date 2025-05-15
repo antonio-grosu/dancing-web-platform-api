@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import { authenticationService } from "../../common/src/services/authentication";
 export interface AdministratorDoc extends mongoose.Document {
   firstName: string;
   lastName: string;
@@ -39,6 +39,20 @@ const administratorSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+administratorSchema.pre("save", async function (done) {
+  if (this.isModified("password") || this.isNew) {
+    const hashedPwd = await authenticationService.pwdToHash(
+      this.get("password")
+    );
+    this.set("password", hashedPwd);
+  }
+  done();
+});
+
+administratorSchema.statics.build = (createUserDto: CreateAdministratorDto) => {
+  return new Administrator(createUserDto);
+};
 
 export const Administrator = mongoose.model<
   AdministratorDoc,

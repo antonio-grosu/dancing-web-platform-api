@@ -10,13 +10,25 @@ import express, {
 import { requireAuth } from "../common/src/middlewares/require-auth";
 import { requireRole } from "../common/src/middlewares/require-role";
 import mongoose from "mongoose";
-import { signupRouter } from "./routers/userAuth/signup";
 import cookieSession from "cookie-session";
-import { signinRouter } from "./routers/userAuth/signin";
-import { currentUserRouter } from "./routers/userAuth/current-user";
-import { currentUser } from "../common/src/middlewares/current-user";
-import { signoutRouter } from "./routers/userAuth/signout";
+// routers pentru useri ( sportiv )
 
+import { userSignupRouter } from "./routers/user/userSignup";
+import { userSigninRouter } from "./routers/user/userSignin";
+import { userSignoutRouter } from "./routers/user/userSignout";
+import { currentUserRouter } from "./routers/user/current-user";
+import { currentUser } from "../common/src/middlewares/current-user";
+// routers pentru administratori
+import { administratorSigninRouter } from "./routers/administrator/administratorSignin";
+import { administratorSignupRouter } from "./routers/administrator/administratorSignup";
+import { administratorSignouRouter } from "./routers/administrator/administratorSignout";
+import { getAllAdministratorsRouter } from "./routers/administrator/administratorGetAll";
+import { getOneAdministratorRouter } from "./routers/administrator/administratorGetOne";
+import { deleteAdministratorRouter } from "./routers/administrator/administratorDelete";
+import { getAllUsersRouter } from "./routers/user/userGetAll";
+import { getOneUserRouter } from "./routers/user/userGetOne";
+import { addCourseRouter } from "./routers/administrator/addCourse";
+import { deleteCourseRouter } from "./routers/administrator/deleteCourse";
 dotenv.config();
 const app = express();
 
@@ -44,19 +56,25 @@ declare global {
   }
 }
 app.use(currentUser);
-app.use(signupRouter);
-app.use(signinRouter);
-app.use(signoutRouter);
+
+// rutele user / sportiv
+app.use(userSignupRouter);
+app.use(userSigninRouter);
+app.use(userSignoutRouter);
 app.use(currentUserRouter);
 
-app.get(
-  "/",
-  requireAuth,
-  requireRole("administrator"),
-  async (req: Request, res: Response) => {
-    res.send("OK");
-  }
-);
+// rutele administrator
+
+app.use(administratorSigninRouter);
+app.use(administratorSignouRouter);
+app.use(administratorSignupRouter);
+app.use(requireAuth, requireRole("administrator"), getAllAdministratorsRouter);
+app.use(requireAuth, requireRole("administrator"), getOneAdministratorRouter);
+app.use(requireAuth, requireRole("administrator"), deleteAdministratorRouter);
+app.use(requireAuth, requireRole("administrator"), getAllUsersRouter);
+app.use(requireAuth, requireRole("administrator"), getOneUserRouter);
+app.use(requireAuth, requireRole("administrator"), addCourseRouter);
+app.use(requireAuth, requireRole("administrator"), deleteCourseRouter);
 
 app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
   res.status(err.status).json(err.message);
