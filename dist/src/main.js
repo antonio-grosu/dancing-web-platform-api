@@ -67,8 +67,20 @@ const administratorGetOne_1 = require("./routers/administrator/administratorGetO
 const administratorDelete_1 = require("./routers/administrator/administratorDelete");
 const userGetAll_1 = require("./routers/user/userGetAll");
 const userGetOne_1 = require("./routers/user/userGetOne");
-const addCourse_1 = require("./routers/administrator/addCourse");
+const addCourse_1 = require("./routers/administrator/courses/addCourse");
 const deleteCourse_1 = require("./routers/administrator/deleteCourse");
+const editCourse_1 = require("./routers/administrator/courses/editCourse");
+const getAllCourses_1 = require("./routers/administrator/courses/getAllCourses");
+const getOneCourse_1 = require("./routers/administrator/courses/getOneCourse");
+// trainer creation -> administrator required
+const createTrainer_1 = require("./routers/administrator/trainer/createTrainer");
+const getAllTrainers_1 = require("./routers/administrator/trainer/getAllTrainers");
+const getOneTrainer_1 = require("./routers/administrator/trainer/getOneTrainer");
+const deleteTrainer_1 = require("./routers/administrator/trainer/deleteTrainer");
+const editTrainer_1 = require("./routers/administrator/trainer/editTrainer");
+// trainer routers
+const trainerSignin_1 = require("./routers/trainer/trainerSignin");
+const trainerSignout_1 = require("./routers/trainer/trainerSignout");
 dotenv.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
@@ -88,17 +100,31 @@ app.use(userSignup_1.userSignupRouter);
 app.use(userSignin_1.userSigninRouter);
 app.use(userSignout_1.userSignoutRouter);
 app.use(current_user_1.currentUserRouter);
-// rutele administrator
+// rutele administrator de auth
 app.use(administratorSignin_1.administratorSigninRouter);
-app.use(administratorSignout_1.administratorSignouRouter);
 app.use(administratorSignup_1.administratorSignupRouter);
-app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), administratorGetAll_1.getAllAdministratorsRouter);
-app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), administratorGetOne_1.getOneAdministratorRouter);
-app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), administratorDelete_1.deleteAdministratorRouter);
-app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), userGetAll_1.getAllUsersRouter);
-app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), userGetOne_1.getOneUserRouter);
-app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), addCourse_1.addCourseRouter);
-app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)("administrator"), deleteCourse_1.deleteCourseRouter);
+// rute auth trainer
+app.use(trainerSignin_1.trainerSigninRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), administratorSignout_1.administratorSignoutRouter);
+// rute permisiuni admin
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), administratorGetAll_1.getAllAdministratorsRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), administratorGetOne_1.getOneAdministratorRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), administratorDelete_1.deleteAdministratorRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), userGetAll_1.getAllUsersRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), userGetOne_1.getOneUserRouter);
+// courses related routes
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), addCourse_1.addCourseRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), deleteCourse_1.deleteCourseRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), editCourse_1.editCourseRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), getAllCourses_1.getAllCoursesRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), getOneCourse_1.getOneCourseRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), createTrainer_1.createTrainerRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), getAllTrainers_1.getAllTrainersRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), getOneTrainer_1.getOneTrainerRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), deleteTrainer_1.deleteOneTrainerRouter);
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["administrator"]), editTrainer_1.editTrainerRouter);
+// rute trainer
+app.use(require_auth_1.requireAuth, (0, require_role_1.requireRole)(["trainer"]), trainerSignout_1.trainerSignoutRouter);
 app.use((err, req, res, next) => {
     res.status(err.status).json(err.message);
 });

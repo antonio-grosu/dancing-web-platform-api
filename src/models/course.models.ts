@@ -8,6 +8,7 @@ export interface CourseDoc extends mongoose.Document {
   dancingStyle: string;
   trainers?: Array<TrainerDoc>;
   members?: Array<UserDoc>;
+  schedule?: Array<string>;
   announcements?: Array<AnnouncementDoc>;
 }
 
@@ -39,6 +40,9 @@ const courseSchema = new mongoose.Schema({
   },
   announcements: {
     type: mongoose.Types.ObjectId,
+  },
+  schedule: {
+    type: [String],
   },
 });
 

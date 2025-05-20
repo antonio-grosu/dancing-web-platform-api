@@ -23,6 +23,9 @@ const courseSchema = new mongoose_1.default.Schema({
     announcements: {
         type: mongoose_1.default.Types.ObjectId,
     },
+    schedule: {
+        type: [String],
+    },
 });
 courseSchema.statics.build = (dto) => {
     return new exports.Course(dto);

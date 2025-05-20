@@ -9,11 +9,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.administratorSignoutRouter = void 0;
+exports.deleteOneTrainerRouter = void 0;
 const express_1 = require("express");
+const trainer_models_1 = require("../../../models/trainer.models");
 const router = (0, express_1.Router)();
-exports.administratorSignoutRouter = router;
-router.post("/api/administrator/auth/signout", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    req.session = null;
-    res.send({});
+exports.deleteOneTrainerRouter = router;
+router.delete("/api/trainers/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    if (!id) {
+        let error = new Error("Trainer id is required");
+        error.status = 400;
+        return next(error);
+    }
+    const trainer = yield trainer_models_1.Trainer.findById(id);
+    if (!trainer) {
+        let error = new Error("Trainer not found");
+        error.status = 404;
+        return next(error);
+    }
+    yield trainer_models_1.Trainer.findByIdAndDelete(id);
+    res.status(200).json({ deleted: trainer });
 }));

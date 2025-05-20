@@ -32,6 +32,10 @@ const trainerSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    percentage: {
+        type: Number,
+        required: true,
+    },
     manages: {
         type: mongoose_1.default.Types.ObjectId,
         ref: "Course",

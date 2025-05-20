@@ -8,6 +8,7 @@ export interface TrainerDoc extends mongoose.Document {
   lastName: string;
   email: string;
   password: string;
+  percentage: number;
   manages?: Array<CourseDoc>;
   sentFeedbacks?: Array<FeedbackDoc>;
 }
@@ -17,6 +18,7 @@ export interface CreateTrainerDto {
   lastName: string;
   email: string;
   password: string;
+  percentage: number;
 }
 
 export interface TrainerModel extends mongoose.Model<TrainerDoc> {
@@ -39,6 +41,10 @@ const trainerSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    required: true,
+  },
+  percentage: {
+    type: Number,
     required: true,
   },
   manages: {

@@ -10,4 +10,4 @@ router.post(
   }
 );
 
-export { router as administratorSignouRouter };
+export { router as administratorSignoutRouter };

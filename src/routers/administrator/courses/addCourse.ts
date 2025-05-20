@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction, Router } from "express";
-import { Course } from "../../models/course.models";
+import { Course } from "../../../models/course.models";
 
 const router = Router();
 
 router.post(
-  "/api/administrator/addcourse",
+  "/api/courses/",
   async (req: Request, res: Response, next: NextFunction) => {
     const { name, dancingStyle } = req.body;
 

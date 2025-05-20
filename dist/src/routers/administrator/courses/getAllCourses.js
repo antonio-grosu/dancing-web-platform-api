@@ -9,11 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.administratorSignoutRouter = void 0;
+exports.getAllCoursesRouter = void 0;
 const express_1 = require("express");
+const course_models_1 = require("../../../models/course.models");
 const router = (0, express_1.Router)();
-exports.administratorSignoutRouter = router;
-router.post("/api/administrator/auth/signout", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    req.session = null;
-    res.send({});
+exports.getAllCoursesRouter = router;
+router.get("/api/courses", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const courses = yield course_models_1.Course.find({});
+    res.status(200).json(courses);
 }));

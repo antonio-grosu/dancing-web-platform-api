@@ -9,11 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.administratorSignoutRouter = void 0;
+exports.deleteOneTrainerRouter = void 0;
 const express_1 = require("express");
 const router = (0, express_1.Router)();
-exports.administratorSignoutRouter = router;
-router.post("/api/administrator/auth/signout", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    req.session = null;
-    res.send({});
+exports.deleteOneTrainerRouter = router;
+router.delete("/api/trainers/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    if (!id) {
+        let error = new Error("Trainer id is required");
+        error.status = 400;
+        return next(error);
+    }
+    const trainer = yield Trainer.findByIdAndDelete(id);
 }));
