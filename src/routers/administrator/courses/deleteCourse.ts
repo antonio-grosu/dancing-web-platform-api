@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction, Router } from "express";
-import { Course } from "../../models/course.models";
-
+import { Course } from "../../../models/course.models";
+import { requireRole } from "../../../../common/src/middlewares/require-role";
 const router = Router();
 
 router.delete(
-  "/api/administrator/deletecourse/:id",
+  "/api/course/delete/:id",
+  requireRole(["administrator"]),
+
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 

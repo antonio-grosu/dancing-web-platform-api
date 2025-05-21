@@ -9,24 +9,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOneCourseRouter = void 0;
+exports.editTrainerRouter = void 0;
 const express_1 = require("express");
-const course_models_1 = require("../../../models/course.models");
-const require_role_1 = require("../../../../common/src/middlewares/require-role");
+const trainer_models_1 = require("../../../models/trainer.models");
 const router = (0, express_1.Router)();
-exports.getOneCourseRouter = router;
-router.get("/api/course/getone/:id", (0, require_role_1.requireRole)(["administrator"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.editTrainerRouter = router;
+router.patch("/api/trainers/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     if (!id) {
-        let error = new Error("Course id is required");
+        let error = new Error("Trainer id is required");
         error.status = 400;
         return next(error);
     }
-    const course = yield course_models_1.Course.findById(id);
-    if (!course) {
-        let error = new Error("Course not found");
+    const { firstName, lastName, email, percentage } = req.body;
+    if (!firstName || !lastName || !email || !percentage) {
+        let error = new Error("Trainer name, email and percentage are required");
+        error.status = 400;
+        return next(error);
+    }
+    const trainer = yield trainer_models_1.Trainer.findOne({ email });
+    if (!trainer) {
+        let error = new Error("Trainer not found");
         error.status = 404;
         return next(error);
     }
-    res.status(200).json(course);
+    const updatedTrainer = yield trainer_models_1.Trainer.findByIdAndUpdate(id, {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        percentage: percentage,
+    });
+    res.status(200).json({ updated: updatedTrainer });
 }));

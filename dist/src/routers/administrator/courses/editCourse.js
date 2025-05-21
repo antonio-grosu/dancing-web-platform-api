@@ -12,9 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.editCourseRouter = void 0;
 const express_1 = require("express");
 const course_models_1 = require("../../../models/course.models");
+const require_role_1 = require("../../../../common/src/middlewares/require-role");
 const router = (0, express_1.Router)();
 exports.editCourseRouter = router;
-router.patch("/api/courses/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.patch("/api/course/edit/:id", (0, require_role_1.requireRole)(["administrator", "trainer"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     if (!id) {
         let error = new Error("Course id is required");

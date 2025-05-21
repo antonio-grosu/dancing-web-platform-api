@@ -15,13 +15,16 @@ const courseSchema = new mongoose_1.default.Schema({
         required: true,
     },
     trainers: {
-        type: mongoose_1.default.Types.ObjectId,
+        type: [mongoose_1.default.Types.ObjectId],
+        ref: "Trainer",
     },
-    memebers: {
-        type: mongoose_1.default.Types.ObjectId,
+    members: {
+        type: [mongoose_1.default.Types.ObjectId],
+        ref: "User",
     },
     announcements: {
-        type: mongoose_1.default.Types.ObjectId,
+        type: [mongoose_1.default.Types.ObjectId],
+        ref: "Announcement",
     },
     schedule: {
         type: [String],

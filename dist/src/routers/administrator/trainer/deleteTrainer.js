@@ -12,9 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteOneTrainerRouter = void 0;
 const express_1 = require("express");
 const trainer_models_1 = require("../../../models/trainer.models");
+const require_role_1 = require("../../../../common/src/middlewares/require-role");
 const router = (0, express_1.Router)();
 exports.deleteOneTrainerRouter = router;
-router.delete("/api/trainers/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete("/api/trainer/delete/:id", (0, require_role_1.requireRole)(["administrator"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     if (!id) {
         let error = new Error("Trainer id is required");

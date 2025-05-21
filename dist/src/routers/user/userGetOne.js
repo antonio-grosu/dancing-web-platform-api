@@ -12,9 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOneUserRouter = void 0;
 const express_1 = require("express");
 const user_models_1 = require("../../models/user.models");
+const require_role_1 = require("../../../common/src/middlewares/require-role");
 const router = (0, express_1.Router)();
 exports.getOneUserRouter = router;
-router.get("/api/user/getone/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/api/user/getone/:id", (0, require_role_1.requireRole)(["administrator"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     if (!id) {
         let error = new Error("Id is mandatory in order to search for a user");

@@ -1,10 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { Course } from "../../../models/course.models";
-
+import { requireRole } from "../../../../common/src/middlewares/require-role";
 const router = Router();
 
 router.patch(
-  "/api/courses/:id",
+  "/api/course/edit/:id",
+  requireRole(["administrator", "trainer"]),
+
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     if (!id) {

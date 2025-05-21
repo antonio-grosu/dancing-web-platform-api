@@ -11,9 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.administratorSignoutRouter = void 0;
 const express_1 = require("express");
+const require_role_1 = require("../../../common/src/middlewares/require-role");
 const router = (0, express_1.Router)();
 exports.administratorSignoutRouter = router;
-router.post("/api/administrator/auth/signout", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/api/administrator/auth/signout", (0, require_role_1.requireRole)(["administrator"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     req.session = null;
     res.send({});
 }));

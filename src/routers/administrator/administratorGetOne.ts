@@ -1,10 +1,11 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { Administrator } from "../../models/administrator.models";
-
+import { requireRole } from "../../../common/src/middlewares/require-role";
 const router = Router();
 
 router.get(
   "/api/administrator/getone/:id",
+
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 

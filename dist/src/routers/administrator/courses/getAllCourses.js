@@ -12,9 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllCoursesRouter = void 0;
 const express_1 = require("express");
 const course_models_1 = require("../../../models/course.models");
+const require_role_1 = require("../../../../common/src/middlewares/require-role");
 const router = (0, express_1.Router)();
 exports.getAllCoursesRouter = router;
-router.get("/api/courses", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/api/course/getall", (0, require_role_1.requireRole)(["administrator", "trainer", "user"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const courses = yield course_models_1.Course.find({});
     res.status(200).json(courses);
 }));

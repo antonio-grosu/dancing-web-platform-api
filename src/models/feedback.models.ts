@@ -1,18 +1,17 @@
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 import { CourseDoc } from "./course.models";
 import { UserDoc } from "./user.models";
+import { TrainerDoc } from "./trainer.models";
 
 export interface FeedbackDoc extends mongoose.Document {
-  leftBy: string;
-  date: Date;
+  leftBy: TrainerDoc;
   content: string;
   onCourse: CourseDoc;
   belongsToUser: UserDoc;
 }
 
 export interface CreateFeedbackDto {
-  leftBy: string;
-  date: Date;
+  leftBy: TrainerDoc;
   content: string;
   onCourse: CourseDoc;
   belongsToUser: UserDoc;
@@ -25,11 +24,11 @@ export interface FeedbackModel extends mongoose.Model<FeedbackDoc> {
 const feedbackSchema = new mongoose.Schema({
   leftBy: {
     type: mongoose.Types.ObjectId,
+    ref: "Trainer",
     required: true,
   },
   date: {
     type: Date,
-    required: true,
   },
   content: {
     type: String,
@@ -37,12 +36,25 @@ const feedbackSchema = new mongoose.Schema({
   },
   onCourse: {
     type: mongoose.Types.ObjectId,
+    ref: "Course",
     required: true,
   },
   belongsToUser: {
     type: mongoose.Types.ObjectId,
+    ref: "User",
     required: true,
   },
+});
+
+feedbackSchema.statics.build = (dto: CreateFeedbackDto) => {
+  return new Feedback(dto);
+};
+
+feedbackSchema.pre("save", async function (done) {
+  if (this.isModified("date") || this.isNew) {
+    this.date = new Date();
+  }
+  done();
 });
 
 export const Feedback = mongoose.model<FeedbackDoc, FeedbackModel>(

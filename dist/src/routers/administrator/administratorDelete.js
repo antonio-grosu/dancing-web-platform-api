@@ -12,9 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteAdministratorRouter = void 0;
 const express_1 = require("express");
 const administrator_models_1 = require("../../models/administrator.models");
+const require_role_1 = require("../../../common/src/middlewares/require-role");
 const router = (0, express_1.Router)();
 exports.deleteAdministratorRouter = router;
-router.delete("/api/administrator/delete/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete("/api/administrator/delete/:id", (0, require_role_1.requireRole)(["administrator"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const administrator = yield administrator_models_1.Administrator.findById(id);
     if (!administrator) {

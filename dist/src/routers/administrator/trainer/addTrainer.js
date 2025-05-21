@@ -9,24 +9,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOneCourseRouter = void 0;
+exports.createTrainerRouter = void 0;
 const express_1 = require("express");
-const course_models_1 = require("../../../models/course.models");
+const trainer_models_1 = require("../../../models/trainer.models");
 const require_role_1 = require("../../../../common/src/middlewares/require-role");
 const router = (0, express_1.Router)();
-exports.getOneCourseRouter = router;
-router.get("/api/course/getone/:id", (0, require_role_1.requireRole)(["administrator"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    if (!id) {
-        let error = new Error("Course id is required");
+exports.createTrainerRouter = router;
+router.post("/api/trainer/add", (0, require_role_1.requireRole)(["administrator"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { firstName, lastName, email, password, percentage } = req.body;
+    if (!firstName || !lastName || !email || !password || !percentage) {
+        let error = new Error("Trainer first name, last name, email, password and percentage are required");
         error.status = 400;
         return next(error);
     }
-    const course = yield course_models_1.Course.findById(id);
-    if (!course) {
-        let error = new Error("Course not found");
-        error.status = 404;
+    const trainer = yield trainer_models_1.Trainer.findOne({ email });
+    if (trainer) {
+        let error = new Error("Trainer already exists");
+        error.status = 400;
         return next(error);
     }
-    res.status(200).json(course);
+    const newTrainer = trainer_models_1.Trainer.build({
+        firstName,
+        lastName,
+        email,
+        password,
+        percentage,
+    });
+    yield newTrainer.save();
+    res.status(201).json({ created: newTrainer });
 }));

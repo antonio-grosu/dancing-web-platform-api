@@ -12,9 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllAdministratorsRouter = void 0;
 const express_1 = require("express");
 const administrator_models_1 = require("../../models/administrator.models");
+const require_role_1 = require("../../../common/src/middlewares/require-role");
 const router = (0, express_1.Router)();
 exports.getAllAdministratorsRouter = router;
-router.get("/api/administrator/getAll", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/api/administrator/getAll", (0, require_role_1.requireRole)(["administrator"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const allAdmins = yield administrator_models_1.Administrator.find({});
     res.status(200).send(allAdmins);
 }));

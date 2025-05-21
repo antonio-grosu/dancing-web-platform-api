@@ -19,7 +19,7 @@ const trainer_models_1 = require("../../models/trainer.models");
 const authentication_1 = require("../../../common/src/services/authentication");
 const router = (0, express_1.Router)();
 exports.trainerSigninRouter = router;
-router.post("/api/trainers/auth/signin", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/api/trainer/auth/signin", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     if (!email || !password) {
         let error = new Error("Email and password are required");

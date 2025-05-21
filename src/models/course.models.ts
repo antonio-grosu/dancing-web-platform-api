@@ -33,13 +33,16 @@ const courseSchema = new mongoose.Schema({
   },
 
   trainers: {
-    type: mongoose.Types.ObjectId,
+    type: [mongoose.Types.ObjectId],
+    ref: "Trainer",
   },
-  memebers: {
-    type: mongoose.Types.ObjectId,
+  members: {
+    type: [mongoose.Types.ObjectId],
+    ref: "User",
   },
   announcements: {
-    type: mongoose.Types.ObjectId,
+    type: [mongoose.Types.ObjectId],
+    ref: "Announcement",
   },
   schedule: {
     type: [String],

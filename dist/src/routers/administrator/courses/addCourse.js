@@ -12,9 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.addCourseRouter = void 0;
 const express_1 = require("express");
 const course_models_1 = require("../../../models/course.models");
+const require_role_1 = require("../../../../common/src/middlewares/require-role");
 const router = (0, express_1.Router)();
 exports.addCourseRouter = router;
-router.post("/api/courses/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/api/course/add", (0, require_role_1.requireRole)(["administrator"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, dancingStyle } = req.body;
     if (!name || !dancingStyle) {
         let error = new Error("Name and dancing style are required in order to create a post/event");

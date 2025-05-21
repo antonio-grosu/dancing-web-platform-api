@@ -5,7 +5,7 @@ import { authenticationService } from "../../../common/src/services/authenticati
 const router = Router();
 
 router.post(
-  "/api/trainers/auth/signin",
+  "/api/trainer/auth/signin",
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 

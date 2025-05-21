@@ -18,6 +18,8 @@ import { userSigninRouter } from "./routers/user/userSignin";
 import { userSignoutRouter } from "./routers/user/userSignout";
 import { currentUserRouter } from "./routers/user/current-user";
 import { currentUser } from "../common/src/middlewares/current-user";
+import { enrollToCourseRouter } from "./routers/user/enrollTo";
+import { getAllEnrollmentsRouter } from "./routers/user/getAllEnrollments";
 // routers pentru administratori
 import { administratorSigninRouter } from "./routers/administrator/administratorSignin";
 import { administratorSignupRouter } from "./routers/administrator/administratorSignup";
@@ -28,14 +30,15 @@ import { deleteAdministratorRouter } from "./routers/administrator/administrator
 import { getAllUsersRouter } from "./routers/user/userGetAll";
 import { getOneUserRouter } from "./routers/user/userGetOne";
 import { addCourseRouter } from "./routers/administrator/courses/addCourse";
-import { deleteCourseRouter } from "./routers/administrator/deleteCourse";
+import { deleteCourseRouter } from "./routers/administrator/courses/deleteCourse";
 import { editCourseRouter } from "./routers/administrator/courses/editCourse";
 import { getAllCoursesRouter } from "./routers/administrator/courses/getAllCourses";
 import { getOneCourseRouter } from "./routers/administrator/courses/getOneCourse";
+import { addManagementRouter } from "./routers/administrator/trainer/addManagement";
 
 // trainer creation -> administrator required
 
-import { createTrainerRouter } from "./routers/administrator/trainer/createTrainer";
+import { createTrainerRouter } from "./routers/administrator/trainer/addTrainer";
 import { getAllTrainersRouter } from "./routers/administrator/trainer/getAllTrainers";
 import { getOneTrainerRouter } from "./routers/administrator/trainer/getOneTrainer";
 import { deleteOneTrainerRouter } from "./routers/administrator/trainer/deleteTrainer";
@@ -45,6 +48,8 @@ import { editTrainerRouter } from "./routers/administrator/trainer/editTrainer";
 
 import { trainerSigninRouter } from "./routers/trainer/trainerSignin";
 import { trainerSignoutRouter } from "./routers/trainer/trainerSignout";
+import { addAnnouncementRouter } from "./routers/trainer/addAnnouncement";
+import { addFeedbackRouter } from "./routers/administrator/trainer/addFeedback";
 
 dotenv.config();
 const app = express();
@@ -72,53 +77,46 @@ declare global {
     status: number;
   }
 }
+// --- Middleware global
 app.use(currentUser);
 
-// rutele user / sportiv
+// --- RUTE AUTENTIFICARE PUBLICĂ ---
 app.use(userSignupRouter);
 app.use(userSigninRouter);
-app.use(userSignoutRouter);
-app.use(currentUserRouter);
-
-// rutele administrator de auth
-
-app.use(administratorSigninRouter);
 app.use(administratorSignupRouter);
-
-// rute auth trainer
+app.use(administratorSigninRouter);
 app.use(trainerSigninRouter);
 
-app.use(
-  requireAuth,
-  requireRole(["administrator"]),
-  administratorSignoutRouter
-);
+app.use(requireAuth);
+// --- RUTE UTILIZATORI (user) ---
+app.use(currentUserRouter);
+app.use(userSignoutRouter);
+app.use(enrollToCourseRouter);
+app.use(getAllEnrollmentsRouter);
+// --- RUTE TRAINERI (trainer) ---
+app.use(trainerSignoutRouter);
+app.use(addAnnouncementRouter);
+app.use(addFeedbackRouter);
 
-// rute permisiuni admin
-app.use(
-  requireAuth,
-  requireRole(["administrator"]),
-  getAllAdministratorsRouter
-);
-app.use(requireAuth, requireRole(["administrator"]), getOneAdministratorRouter);
-app.use(requireAuth, requireRole(["administrator"]), deleteAdministratorRouter);
-app.use(requireAuth, requireRole(["administrator"]), getAllUsersRouter);
-app.use(requireAuth, requireRole(["administrator"]), getOneUserRouter);
-// courses related routes
-app.use(requireAuth, requireRole(["administrator"]), addCourseRouter);
-app.use(requireAuth, requireRole(["administrator"]), deleteCourseRouter);
-app.use(requireAuth, requireRole(["administrator"]), editCourseRouter);
-app.use(requireAuth, requireRole(["administrator"]), getAllCoursesRouter);
-app.use(requireAuth, requireRole(["administrator"]), getOneCourseRouter);
-app.use(requireAuth, requireRole(["administrator"]), createTrainerRouter);
-app.use(requireAuth, requireRole(["administrator"]), getAllTrainersRouter);
-app.use(requireAuth, requireRole(["administrator"]), getOneTrainerRouter);
-app.use(requireAuth, requireRole(["administrator"]), deleteOneTrainerRouter);
-app.use(requireAuth, requireRole(["administrator"]), editTrainerRouter);
-
-// rute trainer
-
-app.use(requireAuth, requireRole(["trainer"]), trainerSignoutRouter);
+// --- RUTE ADMINISTRATORI (admin) ---
+app.use(administratorSignoutRouter);
+app.use(getAllAdministratorsRouter);
+app.use(getOneAdministratorRouter);
+app.use(deleteAdministratorRouter);
+app.use(getAllUsersRouter);
+app.use(getOneUserRouter);
+app.use(addCourseRouter);
+app.use(deleteCourseRouter);
+app.use(editCourseRouter);
+app.use(getOneCourseRouter);
+app.use(createTrainerRouter);
+app.use(getAllTrainersRouter);
+app.use(getOneTrainerRouter);
+app.use(deleteOneTrainerRouter);
+app.use(editTrainerRouter);
+app.use(addManagementRouter);
+// --- RUTE ACCES COMUN (orice rol) ---
+app.use(getAllCoursesRouter);
 
 app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
   res.status(err.status).json(err.message);

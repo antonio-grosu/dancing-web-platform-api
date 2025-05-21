@@ -33,11 +33,12 @@ const userSchema = new mongoose_1.default.Schema({
         required: true,
     },
     enrolledTo: {
-        type: mongoose_1.default.Types.ObjectId,
+        type: [mongoose_1.default.Types.ObjectId],
         ref: "Course",
+        unique: true,
     },
     receivedFeedbacks: {
-        type: mongoose_1.default.Types.ObjectId,
+        type: [mongoose_1.default.Types.ObjectId],
         ref: "Feedback",
     },
 });

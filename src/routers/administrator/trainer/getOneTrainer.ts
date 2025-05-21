@@ -1,10 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { Trainer } from "../../../models/trainer.models";
-
+import { requireRole } from "../../../../common/src/middlewares/require-role";
 const router = Router();
 
 router.get(
-  "/api/trainers/:id",
+  "/api/trainer/getone/:id",
+  requireRole(["administrator"]),
+
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
-export const requireRole = (
-  roles: Array<"user" | "trainer" | "administrator">
-) => {
+type Role = "user" | "administrator" | "trainer";
+
+export const requireRole = (roles: Role[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.currentUser || !roles.includes(req.currentUser.role)) {
       const error = new Error("Access denied") as CustomError;

@@ -44,11 +44,12 @@ const userSchema = new mongoose.Schema({
   },
 
   enrolledTo: {
-    type: mongoose.Types.ObjectId,
+    type: [mongoose.Types.ObjectId],
     ref: "Course",
+    unique: true,
   },
   receivedFeedbacks: {
-    type: mongoose.Types.ObjectId,
+    type: [mongoose.Types.ObjectId],
     ref: "Feedback",
   },
 });

@@ -48,11 +48,11 @@ const trainerSchema = new mongoose.Schema({
     required: true,
   },
   manages: {
-    type: mongoose.Types.ObjectId,
+    type: [mongoose.Types.ObjectId],
     ref: "Course",
   },
   sentFeedback: {
-    type: mongoose.Types.ObjectId,
+    type: [mongoose.Types.ObjectId],
     ref: "Feedback",
   },
 });
