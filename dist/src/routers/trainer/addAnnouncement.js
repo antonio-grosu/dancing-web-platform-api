@@ -15,6 +15,7 @@ const announcement_models_1 = require("../../models/announcement.models");
 const require_role_1 = require("../../../common/src/middlewares/require-role");
 const course_models_1 = require("../../models/course.models");
 const trainer_models_1 = require("../../models/trainer.models");
+const send_email_1 = require("../../../common/src/services/send-email");
 const router = (0, express_1.Router)();
 exports.addAnnouncementRouter = router;
 router.post("/api/announcement/add/:courseId", (0, require_role_1.requireRole)(["trainer"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -34,7 +35,9 @@ router.post("/api/announcement/add/:courseId", (0, require_role_1.requireRole)([
         error.status = 404;
         return next(error);
     }
-    const course = yield course_models_1.Course.findById(courseId).populate("trainers");
+    const course = yield course_models_1.Course.findById(courseId)
+        .populate("trainers")
+        .populate("members");
     if (!course) {
         let error = new Error("Course not found");
         error.status = 404;
@@ -57,5 +60,20 @@ router.post("/api/announcement/add/:courseId", (0, require_role_1.requireRole)([
     yield course_models_1.Course.findByIdAndUpdate({ _id: courseId }, {
         $push: { announcements: announcement._id },
     });
+    if (course.members && course.members.length > 0) {
+        const recipientEmails = course.members
+            .filter((member) => member.email)
+            .map((member) => member.email);
+        yield Promise.all(recipientEmails.map((email) => (0, send_email_1.sendEmail)({
+            to: email,
+            subject: `Anunț nou la cursul ${course.name}`,
+            html: `
+          <h3>Bună!</h3>
+          <p>A fost publicat un nou anunț de către antrenorul tău ${trainer.firstName} ${trainer.lastName}:</p>
+          <blockquote>${content}</blockquote>
+          <p>Ne vedem la antrenament! 💃</p>
+        `,
+        })));
+    }
     res.status(201).json({ created: announcement });
 }));

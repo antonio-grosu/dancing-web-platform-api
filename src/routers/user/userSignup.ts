@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { User } from "../../models/user.models";
 const router = Router();
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../../../common/src/services/send-email";
 
 router.post(
   "/api/user/auth/signup",
@@ -31,7 +32,14 @@ router.post(
         process.env.JWT_KEY!
       ),
     };
-
+    await sendEmail({
+      to: newUser.email,
+      subject: "Welcome to Dance Platform",
+      html: `<h1>Hello ${newUser.firstName}!</h1>
+             <p>Thank you for signing up on our platform. We are excited to have you with us!</p>
+             <p>Best regards,</p>
+             <p>The Dance Platform Team</p>`,
+    });
     res.status(201).send(newUser);
   }
 );

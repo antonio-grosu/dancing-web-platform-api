@@ -45,12 +45,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.transporter = void 0;
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importStar(require("express"));
 const require_auth_1 = require("../common/src/middlewares/require-auth");
 const mongoose_1 = __importDefault(require("mongoose"));
 const cookie_session_1 = __importDefault(require("cookie-session"));
+const nodemailer_1 = __importDefault(require("nodemailer"));
 // routers pentru useri ( sportiv )
 const userSignup_1 = require("./routers/user/userSignup");
 const userSignin_1 = require("./routers/user/userSignin");
@@ -84,7 +86,7 @@ const editTrainer_1 = require("./routers/administrator/trainer/editTrainer");
 const trainerSignin_1 = require("./routers/trainer/trainerSignin");
 const trainerSignout_1 = require("./routers/trainer/trainerSignout");
 const addAnnouncement_1 = require("./routers/trainer/addAnnouncement");
-const addFeedback_1 = require("./routers/administrator/trainer/addFeedback");
+const addFeedback_1 = require("./routers/trainer/addFeedback");
 dotenv.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
@@ -138,19 +140,37 @@ app.use(getAllCourses_1.getAllCoursesRouter);
 app.use((err, req, res, next) => {
     res.status(err.status).json(err.message);
 });
+exports.transporter = nodemailer_1.default.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!process.env.MONGO_URI)
         throw new Error("Mongo URI is required in order to use the API");
     if (!process.env.JWT_KEY)
         throw new Error("JWT Key is required in order to use the API");
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        throw new Error("ENV variables EMAIL_USER or EMAIL_PASS are missing");
+    }
+    try {
+        yield exports.transporter.verify();
+        console.log("✅ Nodemailer is ready to send emails\n");
+    }
+    catch (err) {
+        throw new Error("Nodemailer Error: " + err.message);
+    }
     try {
         yield mongoose_1.default.connect(process.env.MONGO_URI);
+        console.log("✅ Connected to MongoDB\n");
     }
     catch (err) {
         throw new Error("MongoDB Error");
     }
     app.listen("8080", () => {
-        console.log("API running on port 8080");
+        console.log("💡 API running on port 8080");
     });
 });
 start();

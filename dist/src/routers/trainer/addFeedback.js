@@ -11,11 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addFeedbackRouter = void 0;
 const express_1 = require("express");
-const require_role_1 = require("../../../../common/src/middlewares/require-role");
-const trainer_models_1 = require("../../../models/trainer.models");
-const feedback_models_1 = require("../../../models/feedback.models");
-const course_models_1 = require("../../../models/course.models");
-const user_models_1 = require("../../../models/user.models");
+const require_role_1 = require("../../../common/src/middlewares/require-role");
+const trainer_models_1 = require("../../models/trainer.models");
+const feedback_models_1 = require("../../models/feedback.models");
+const course_models_1 = require("../../models/course.models");
+const user_models_1 = require("../../models/user.models");
 const router = (0, express_1.Router)();
 exports.addFeedbackRouter = router;
 router.post("/api/feedback/add/:courseId/:userId", (0, require_role_1.requireRole)(["trainer"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -64,12 +64,12 @@ router.post("/api/feedback/add/:courseId/:userId", (0, require_role_1.requireRol
         leftBy: trainer,
     });
     yield feedback.save();
-    yield user_models_1.User.findByIdAndUpdate(userId, {
+    yield user_models_1.User.findByIdAndUpdate({ _id: userId }, {
         $push: {
             receivedFeedbacks: feedback._id,
         },
     });
-    yield trainer_models_1.Trainer.findByIdAndUpdate(trainerId, {
+    yield trainer_models_1.Trainer.findByIdAndUpdate({ _id: trainerId }, {
         $push: {
             sentFeedback: feedback._id,
         },
@@ -84,5 +84,5 @@ router.post("/api/feedback/add/:courseId/:userId", (0, require_role_1.requireRol
     //   <p>Ține-o tot așa! 🕺</p>
     // `,
     //   });
-    res.status(201).json({ feedback });
+    res.status(201).json({ ok: true });
 }));

@@ -38,9 +38,9 @@ const feedbackSchema = new mongoose_1.default.Schema({
         required: true,
     },
 });
-feedbackSchema.statics.build = (dto) => {
-    return new exports.Feedback(dto);
-};
+// feedbackSchema.statics.build = (dto: CreateFeedbackDto) => {
+//   return new Feedback(dto);
+// };
 feedbackSchema.pre("save", function (done) {
     return __awaiter(this, void 0, void 0, function* () {
         if (this.isModified("date") || this.isNew) {

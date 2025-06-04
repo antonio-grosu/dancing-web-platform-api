@@ -18,6 +18,7 @@ const user_models_1 = require("../../models/user.models");
 const router = (0, express_1.Router)();
 exports.userSignupRouter = router;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const send_email_1 = require("../../../common/src/services/send-email");
 router.post("/api/user/auth/signup", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { lastName, firstName, email, password } = req.body;
     if (!lastName || !firstName || !email || !password) {
@@ -36,5 +37,13 @@ router.post("/api/user/auth/signup", (req, res, next) => __awaiter(void 0, void 
     req.session = {
         jwt: jsonwebtoken_1.default.sign({ email, id: newUser._id, role: "user" }, process.env.JWT_KEY),
     };
+    yield (0, send_email_1.sendEmail)({
+        to: newUser.email,
+        subject: "Welcome to Dance Platform",
+        html: `<h1>Hello ${newUser.firstName}!</h1>
+             <p>Thank you for signing up on our platform. We are excited to have you with us!</p>
+             <p>Best regards,</p>
+             <p>The Dance Platform Team</p>`,
+    });
     res.status(201).send(newUser);
 }));

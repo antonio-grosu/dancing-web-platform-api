@@ -3,7 +3,7 @@ import { Announcement } from "../../models/announcement.models";
 import { requireRole } from "../../../common/src/middlewares/require-role";
 import { Course } from "../../models/course.models";
 import { Trainer } from "../../models/trainer.models";
-
+import { sendEmail } from "../../../common/src/services/send-email";
 const router = Router();
 
 router.post(
@@ -26,7 +26,9 @@ router.post(
       error.status = 404;
       return next(error);
     }
-    const course = await Course.findById(courseId).populate("trainers");
+    const course = await Course.findById(courseId)
+      .populate("trainers")
+      .populate("members");
     if (!course) {
       let error = new Error("Course not found") as CustomError;
       error.status = 404;
@@ -59,6 +61,27 @@ router.post(
         $push: { announcements: announcement._id },
       }
     );
+
+    if (course.members && course.members.length > 0) {
+      const recipientEmails = course.members
+        .filter((member) => member.email)
+        .map((member) => member.email);
+
+      await Promise.all(
+        recipientEmails.map((email) =>
+          sendEmail({
+            to: email,
+            subject: `Anunț nou la cursul ${course.name}`,
+            html: `
+          <h3>Bună!</h3>
+          <p>A fost publicat un nou anunț de către antrenorul tău ${trainer.firstName} ${trainer.lastName}:</p>
+          <blockquote>${content}</blockquote>
+          <p>Ne vedem la antrenament! 💃</p>
+        `,
+          })
+        )
+      );
+    }
 
     res.status(201).json({ created: announcement });
   }

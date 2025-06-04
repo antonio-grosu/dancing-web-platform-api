@@ -2,7 +2,8 @@ import { Router, Request, Response, NextFunction } from "express";
 import { requireRole } from "../../../common/src/middlewares/require-role";
 import { Course } from "../../models/course.models";
 import { User } from "../../models/user.models";
-
+import { sendEmail } from "../../../common/src/services/send-email";
+import { Administrator } from "../../models/administrator.models";
 const router = Router();
 
 router.post(
@@ -16,7 +17,10 @@ router.post(
       return next(error);
     }
 
-    const course = await Course.findById(id).populate("members");
+    const admins = await Administrator.find({});
+    const course = await Course.findById(id)
+      .populate("members")
+      .populate("trainers");
 
     if (!course) {
       let error = new Error("Course not found") as CustomError;
@@ -53,7 +57,35 @@ router.post(
         },
       }
     );
+    await sendEmail({
+      to: updatedUser!.email,
+      subject: "Enrollment Confirmation",
+      html: `<h1>Enrollment Successful</h1>
+             <p>You have been successfully enrolled in the course: ${
+               updatedCourse!.name
+             }.</p>
+             <p>Thank you for joining!</p>`,
+    });
 
+    const recipients = [
+      ...course.trainers!.map((trainer) => trainer.email),
+      ...admins.map((admin) => admin.email),
+    ];
+
+    await Promise.all(
+      recipients.map((email) =>
+        sendEmail({
+          to: email,
+          subject: `Un nou sportiv s-a înscris la ${course.name}`,
+          html: `
+        <p><strong>${updatedUser!.firstName} ${
+            updatedUser!.lastName
+          }</strong> s-a înscris la cursul <strong>${course.name}</strong>.</p>
+        <p>Poți vedea detalii în platformă.</p>
+      `,
+        })
+      )
+    );
     res.status(200).json({ enrolledTo: id, user: userId });
   }
 );

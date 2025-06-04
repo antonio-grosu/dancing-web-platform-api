@@ -14,6 +14,8 @@ const express_1 = require("express");
 const require_role_1 = require("../../../common/src/middlewares/require-role");
 const course_models_1 = require("../../models/course.models");
 const user_models_1 = require("../../models/user.models");
+const send_email_1 = require("../../../common/src/services/send-email");
+const administrator_models_1 = require("../../models/administrator.models");
 const router = (0, express_1.Router)();
 exports.enrollToCourseRouter = router;
 router.post("/api/course/enrollment/:id", (0, require_role_1.requireRole)(["user"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -24,7 +26,10 @@ router.post("/api/course/enrollment/:id", (0, require_role_1.requireRole)(["user
         error.status = 400;
         return next(error);
     }
-    const course = yield course_models_1.Course.findById(id).populate("members");
+    const admins = yield administrator_models_1.Administrator.find({});
+    const course = yield course_models_1.Course.findById(id)
+        .populate("members")
+        .populate("trainers");
     if (!course) {
         let error = new Error("Course not found");
         error.status = 404;
@@ -47,5 +52,24 @@ router.post("/api/course/enrollment/:id", (0, require_role_1.requireRole)(["user
             members: userId,
         },
     });
+    yield (0, send_email_1.sendEmail)({
+        to: updatedUser.email,
+        subject: "Enrollment Confirmation",
+        html: `<h1>Enrollment Successful</h1>
+             <p>You have been successfully enrolled in the course: ${updatedCourse.name}.</p>
+             <p>Thank you for joining!</p>`,
+    });
+    const recipients = [
+        ...course.trainers.map((trainer) => trainer.email),
+        ...admins.map((admin) => admin.email),
+    ];
+    yield Promise.all(recipients.map((email) => (0, send_email_1.sendEmail)({
+        to: email,
+        subject: `Un nou sportiv s-a înscris la ${course.name}`,
+        html: `
+        <p><strong>${updatedUser.firstName} ${updatedUser.lastName}</strong> s-a înscris la cursul <strong>${course.name}</strong>.</p>
+        <p>Poți vedea detalii în platformă.</p>
+      `,
+    })));
     res.status(200).json({ enrolledTo: id, user: userId });
 }));
