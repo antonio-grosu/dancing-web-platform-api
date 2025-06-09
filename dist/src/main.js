@@ -53,6 +53,9 @@ const require_auth_1 = require("../common/src/middlewares/require-auth");
 const mongoose_1 = __importDefault(require("mongoose"));
 const cookie_session_1 = __importDefault(require("cookie-session"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
+const checkOverDueSubscriptions_1 = require("../common/src/services/checkOverDueSubscriptions");
+// stripe webhook router
+const webhook_1 = require("./routers/stripe/webhook");
 // routers pentru useri ( sportiv )
 const userSignup_1 = require("./routers/user/userSignup");
 const userSignin_1 = require("./routers/user/userSignin");
@@ -60,7 +63,12 @@ const userSignout_1 = require("./routers/user/userSignout");
 const current_user_1 = require("./routers/user/current-user");
 const current_user_2 = require("../common/src/middlewares/current-user");
 const enrollTo_1 = require("./routers/user/enrollTo");
+const unEnroll_1 = require("./routers/user/unEnroll");
 const getAllEnrollments_1 = require("./routers/user/getAllEnrollments");
+const getFeedbackOnCourse_1 = require("./routers/user/getFeedbackOnCourse");
+const getAllFeedback_1 = require("./routers/user/getAllFeedback");
+const getAnnouncementsOnCourse_1 = require("./routers/user/getAnnouncementsOnCourse");
+const createChekout_1 = require("./routers/user/createChekout");
 // routers pentru administratori
 const administratorSignin_1 = require("./routers/administrator/administratorSignin");
 const administratorSignup_1 = require("./routers/administrator/administratorSignup");
@@ -93,13 +101,14 @@ app.use((0, cors_1.default)({
     origin: "*",
     optionsSuccessStatus: 200,
 }));
-app.use((0, express_1.json)());
 app.use((0, express_1.urlencoded)({ extended: false }));
 app.set("trust proxy", true);
 app.use((0, cookie_session_1.default)({
     signed: false,
     secure: false,
 }));
+app.use("/api/webhooks/stripe", express_1.default.raw({ type: "application/json" }), webhook_1.stripeWebhookRouter);
+app.use((0, express_1.json)());
 // --- Middleware global
 app.use(current_user_2.currentUser);
 // --- RUTE AUTENTIFICARE PUBLICĂ ---
@@ -112,8 +121,15 @@ app.use(require_auth_1.requireAuth);
 // --- RUTE UTILIZATORI (user) ---
 app.use(current_user_1.currentUserRouter);
 app.use(userSignout_1.userSignoutRouter);
+// enroll ul vechi
 app.use(enrollTo_1.enrollToCourseRouter);
+//create checkout
+app.use(createChekout_1.createCheckoutRouter);
+app.use(unEnroll_1.unEnrollmentRouter);
 app.use(getAllEnrollments_1.getAllEnrollmentsRouter);
+app.use(getFeedbackOnCourse_1.getFeedbackOnCourseRouter);
+app.use(getAllFeedback_1.getAllFeedbackRouter);
+app.use(getAnnouncementsOnCourse_1.getAnnouncementsOnCourseRouter);
 // --- RUTE TRAINERI (trainer) ---
 app.use(trainerSignout_1.trainerSignoutRouter);
 app.use(addAnnouncement_1.addAnnouncementRouter);
@@ -138,7 +154,8 @@ app.use(addManagement_1.addManagementRouter);
 // --- RUTE ACCES COMUN (orice rol) ---
 app.use(getAllCourses_1.getAllCoursesRouter);
 app.use((err, req, res, next) => {
-    res.status(err.status).json(err.message);
+    const status = typeof err.status === "number" ? err.status : 500;
+    res.status(status).json({ message: err.message || "Unexpected error" });
 });
 exports.transporter = nodemailer_1.default.createTransport({
     service: "gmail",
@@ -171,6 +188,7 @@ const start = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     app.listen("8080", () => {
         console.log("💡 API running on port 8080");
+        (0, checkOverDueSubscriptions_1.startOverdueSubscriptionCron)();
     });
 });
 start();

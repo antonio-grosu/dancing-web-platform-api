@@ -59,12 +59,10 @@ router.post(
     );
     await sendEmail({
       to: updatedUser!.email,
-      subject: "Enrollment Confirmation",
-      html: `<h1>Enrollment Successful</h1>
-             <p>You have been successfully enrolled in the course: ${
-               updatedCourse!.name
-             }.</p>
-             <p>Thank you for joining!</p>`,
+      subject: "Confirmare Inscriere",
+      html: `<h1>Inscriere cu succes</h1>
+             <p>Te-ai inscris cu succes la cursul : ${updatedCourse!.name}.</p>
+             <p>Multumim!</p>`,
     });
 
     const recipients = [

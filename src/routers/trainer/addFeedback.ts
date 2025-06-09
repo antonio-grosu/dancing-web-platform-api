@@ -86,16 +86,16 @@ router.post(
       }
     );
 
-    //   await sendEmail({
-    //     to: user.email,
-    //     subject: `Ai primit un nou feedback la cursul ${course.name}`,
-    //     html: `
-    //   <p>Salut, ${user.firstName}!</p>
-    //   <p>Antrenorul tău <strong>${trainer.firstName} ${trainer.lastName}</strong> ți-a lăsat un feedback la <strong>${course.name}</strong>:</p>
-    //   <blockquote>${req.body.content}</blockquote>
-    //   <p>Ține-o tot așa! 🕺</p>
-    // `,
-    //   });
+    await sendEmail({
+      to: user.email,
+      subject: `Ai primit un nou feedback la cursul ${course.name}`,
+      html: `
+      <p>Salut, ${user.firstName}!</p>
+      <p>Antrenorul tău <strong>${trainer.firstName} ${trainer.lastName}</strong> ți-a lăsat un feedback la <strong>${course.name}</strong>:</p>
+      <blockquote>${req.body.content}</blockquote>
+      <p>🕺</p>
+    `,
+    });
 
     res.status(201).json({ ok: true });
   }

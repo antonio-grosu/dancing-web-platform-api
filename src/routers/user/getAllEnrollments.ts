@@ -15,7 +15,7 @@ router.get(
       return next(error);
     }
     const enrolledTo = user.enrolledTo;
-    res.status(200).json({ enrolledTo });
+    res.status(200).json(enrolledTo);
   }
 );
 

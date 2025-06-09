@@ -54,10 +54,10 @@ router.post("/api/course/enrollment/:id", (0, require_role_1.requireRole)(["user
     });
     yield (0, send_email_1.sendEmail)({
         to: updatedUser.email,
-        subject: "Enrollment Confirmation",
-        html: `<h1>Enrollment Successful</h1>
-             <p>You have been successfully enrolled in the course: ${updatedCourse.name}.</p>
-             <p>Thank you for joining!</p>`,
+        subject: "Confirmare Inscriere",
+        html: `<h1>Inscriere cu succes</h1>
+             <p>Te-ai inscris cu succes la cursul : ${updatedCourse.name}.</p>
+             <p>Multumim!</p>`,
     });
     const recipients = [
         ...course.trainers.map((trainer) => trainer.email),

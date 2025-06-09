@@ -16,6 +16,7 @@ const trainer_models_1 = require("../../models/trainer.models");
 const feedback_models_1 = require("../../models/feedback.models");
 const course_models_1 = require("../../models/course.models");
 const user_models_1 = require("../../models/user.models");
+const send_email_1 = require("../../../common/src/services/send-email");
 const router = (0, express_1.Router)();
 exports.addFeedbackRouter = router;
 router.post("/api/feedback/add/:courseId/:userId", (0, require_role_1.requireRole)(["trainer"]), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -74,15 +75,15 @@ router.post("/api/feedback/add/:courseId/:userId", (0, require_role_1.requireRol
             sentFeedback: feedback._id,
         },
     });
-    //   await sendEmail({
-    //     to: user.email,
-    //     subject: `Ai primit un nou feedback la cursul ${course.name}`,
-    //     html: `
-    //   <p>Salut, ${user.firstName}!</p>
-    //   <p>Antrenorul tău <strong>${trainer.firstName} ${trainer.lastName}</strong> ți-a lăsat un feedback la <strong>${course.name}</strong>:</p>
-    //   <blockquote>${req.body.content}</blockquote>
-    //   <p>Ține-o tot așa! 🕺</p>
-    // `,
-    //   });
+    yield (0, send_email_1.sendEmail)({
+        to: user.email,
+        subject: `Ai primit un nou feedback la cursul ${course.name}`,
+        html: `
+      <p>Salut, ${user.firstName}!</p>
+      <p>Antrenorul tău <strong>${trainer.firstName} ${trainer.lastName}</strong> ți-a lăsat un feedback la <strong>${course.name}</strong>:</p>
+      <blockquote>${req.body.content}</blockquote>
+      <p>🕺</p>
+    `,
+    });
     res.status(201).json({ ok: true });
 }));
